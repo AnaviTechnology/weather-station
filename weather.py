@@ -7,9 +7,10 @@ from sense_hat import SenseHat
 sense = SenseHat()
 sense.clear()
 
-temperature = sense.get_temperature()
-humidity = sense.get_humidity()
-pressure = sense.get_pressure()
+format = "{0:.1f}"
+temperature = format.format(sense.get_temperature())
+humidity = format.format(sense.get_humidity())
+pressure = format.format(sense.get_pressure())
 
 weather = {
 	'temperature': temperature,
