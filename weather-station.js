@@ -1,12 +1,17 @@
 var sys = require('sys')
 var process = require('child_process');
 
+var data = {}
+
 function readData(error, stdout, stderr) {
 	if (null !== error) {
-		return;
+		return false;
 	}
-	var data = JSON.parse(stdout);
+	data = JSON.parse(stdout);
+	return true;
+}
 
+function print() {
 	//Print information on the LED matrix of Raspberry Pi SENSE HAT 
 	var text = "Temperature: " + data.temperature + "C ";
 	text += "Humidity: " + data.humidity + "% ";
@@ -18,4 +23,18 @@ function readData(error, stdout, stderr) {
 	child.unref();
 }
 
-process.exec("python weather.py", readData);
+function start(error, stdout, stderr) {
+	if (readData(error, stdout, stderr)) {
+		print();
+
+		var intervalPrint = setInterval(function() {
+			print();
+		}, 32000);
+	}
+}
+
+process.exec("python weather.py", start);
+
+var intervalRead = setInterval(function() {
+	process.exec("python weather.py", readData);
+}, 1000);
