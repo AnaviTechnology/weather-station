@@ -1,6 +1,10 @@
 var sys = require('sys')
 var process = require('child_process');
 
+var python = "/usr/bin/python";
+var path = "/opt/rabbitpi/weather-station/";
+var cmdPrefix = python + " " + path;
+
 var data = {
 		"pressure": 0,
 		"temperature": 0,
@@ -20,7 +24,7 @@ function print() {
 	var text = "Temperature: " + data.temperature + "C ";
 	text += "Humidity: " + data.humidity + "% ";
 	text += "Pressure: " + data.pressure + "mb ";
-	var child = process.spawn("python", ["print.py", "--text", text], {
+	var child = process.spawn(python, [path+"print.py", "--text", text], {
 		detached: true,
 		stdio: [ 'ignore', 'ignore', 'ignore' ]
 	});
@@ -37,8 +41,8 @@ function start(error, stdout, stderr) {
 	}
 }
 
-process.exec("python weather.py", start);
+process.exec(cmdPrefix + "weather.py", start);
 
 var intervalRead = setInterval(function() {
-	process.exec("python weather.py", readData);
+	process.exec(cmdPrefix + "weather.py", readData);
 }, 1000);
