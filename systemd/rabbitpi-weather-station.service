@@ -1,0 +1,8 @@
+[Unit]
+Description=RabbitPi weather station for Raspberry Pi Sense HAT
+
+[Service]
+ExecStart=/usr/bin/node /opt/rabbitpi/weather-station/weather-station.js
+
+[Install]
+WantedBy=multi-user.target
