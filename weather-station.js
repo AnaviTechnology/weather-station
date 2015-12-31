@@ -1,7 +1,11 @@
 var sys = require('sys')
 var process = require('child_process');
 
-var data = {}
+var data = {
+		"pressure": 0,
+		"temperature": 0,
+		"humidity": 0
+}
 
 function readData(error, stdout, stderr) {
 	if (null !== error) {
