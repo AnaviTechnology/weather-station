@@ -5,6 +5,8 @@ var python = "/usr/bin/python";
 var path = "/opt/rabbitpi/weather-station/";
 var cmdPrefix = python + " " + path;
 
+var isPrintEnabled = true;
+
 var data = {
 		"pressure": 0,
 		"temperature": 0,
@@ -20,6 +22,10 @@ function readData(error, stdout, stderr) {
 }
 
 function print() {
+	//Do not do anything if printing is disabled
+	if (isPrintEnabled === false) {
+		return;
+	}
 	//Print information on the LED matrix of Raspberry Pi SENSE HAT 
 	var text = "Temperature: " + data.temperature + "C ";
 	text += "Humidity: " + data.humidity + "% ";
