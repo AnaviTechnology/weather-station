@@ -17,6 +17,20 @@ mkdir -p /opt/rabbitpi/
 git clone https://github.com/RabbitPi/weather-station.git /opt/rabbitpi/weather-station/
 ```
 
+* Install
+
+```
+cd /opt/rabbitpi/weather-station
+npm install
+```
+
+* Copy and edit configurations
+
+```
+mkdir -p /etc/rabbitpi/
+cp /opt/rabbitpi/weather-station/weather-station.json /etc/rabbitpi/weather-station.json
+```
+
 * Deploy systemd service
 
 ```

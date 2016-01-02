@@ -1,0 +1,9 @@
+{
+	"mqtt": {
+		"host": "test.mosquitto.org",
+		"port": 1883
+	},
+	"display": {
+		"print": true
+	}
+}

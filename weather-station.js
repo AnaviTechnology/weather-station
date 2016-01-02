@@ -1,14 +1,30 @@
-var sys = require('sys')
-var process = require('child_process');
+var sys = require('sys');
+var childProcess = require('child_process');
+var nconf = require('nconf');
+var mqtt  = require('mqtt');
+var fs = require('fs');
 
-var mqtt    = require('mqtt');
-var client  = mqtt.connect('mqtt://test.mosquitto.org');
+var configPath = '/etc/rabbitpi/weather-station.json'
+
+try {
+	fs.accessSync(configPath, fs.F_OK);
+} catch (e) {
+	console.error('ERROR: config file ' + configPath + ' not found');
+	process.exit(1);
+}
+
+nconf.file(configPath);
+
+var client  = mqtt.connect({
+				host: nconf.get('mqtt:host'),
+				port: nconf.get('mqtt:port')
+			});
 
 var python = "/usr/bin/python";
 var path = "/opt/rabbitpi/weather-station/";
 var cmdPrefix = python + " " + path;
 
-var isPrintEnabled = true;
+var isPrintEnabled = nconf.get('display:print');
 
 var data = {
 		"pressure": 0,
@@ -16,7 +32,7 @@ var data = {
 		"humidity": 0
 }
 
-function processConfigurations(message) {
+function childProcessConfigurations(message) {
 	// Example configuration message:
 	// { "print": false }
 	try {
@@ -37,7 +53,7 @@ client.on('connect', function () {
 
 client.on('message', function (topic, message) {
 	if ('config' === topic) {
-		processConfigurations(message);
+		childProcessConfigurations(message);
 	}
 });
 
@@ -81,7 +97,7 @@ function print() {
 	var text = "Temperature: " + data.temperature + "C ";
 	text += "Humidity: " + data.humidity + "% ";
 	text += "Pressure: " + data.pressure + "mb ";
-	var child = process.spawn(python, [path+"print.py", "--text", text], {
+	var child = childProcess.spawn(python, [path+"print.py", "--text", text], {
 		detached: true,
 		stdio: [ 'ignore', 'ignore', 'ignore' ]
 	});
@@ -98,8 +114,8 @@ function start(error, stdout, stderr) {
 	}
 }
 
-process.exec(cmdPrefix + "weather.py", start);
+childProcess.exec(cmdPrefix + "weather.py", start);
 
 var intervalRead = setInterval(function() {
-	process.exec(cmdPrefix + "weather.py", readData);
+	childProcess.exec(cmdPrefix + "weather.py", readData);
 }, 1000);

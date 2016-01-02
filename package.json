@@ -19,7 +19,8 @@
 		"Sense HAT"
 	],
 	"dependencies": {
-		"mqtt": ">=1.6.3"
+		"mqtt": ">=1.6.3",
+		"nconf": ">=0.8.2"
   	},
 	"author": "Leon Anavi <leon@anavi.org>",
 	"license": "GPL-3.0",
