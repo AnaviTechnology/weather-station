@@ -16,12 +16,29 @@ var data = {
 		"humidity": 0
 }
 
+function processConfigurations(message) {
+	// Example configuration message:
+	// { "print": false }
+	try {
+		// Read configurations
+		var config = JSON.parse(message.toString());
+		// Update print settings
+		isPrintEnabled = (true == config.print);
+	}
+	catch(error) {
+		// Nothing to do, the configuration is wrong
+		console.log("Configuration error: "+error.message);
+	}
+}
+
 client.on('connect', function () {
-	client.subscribe('command');
+	client.subscribe('config');
 });
 
 client.on('message', function (topic, message) {
-	//TODO: disable print
+	if ('config' === topic) {
+		processConfigurations(message);
+	}
 });
 
 function readData(error, stdout, stderr) {
