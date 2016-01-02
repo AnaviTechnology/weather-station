@@ -1,0 +1,34 @@
+{
+	"name": "rabbitpi-weather-station",
+	"version": "1.0.0",
+	"description": "RabbitPi Weather Station built with Raspberry Pi Sense HAT",
+	"main": "weather-station.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+	"type": "git",
+		"url": "git+https://github.com/RabbitPi/weather-station.git"
+	},
+	"keywords": [
+		"weather",
+		"temperature",
+		"humidity",
+		"pressure",
+		"Raspberry Pi",
+		"Sense HAT"
+	],
+	"dependencies": {
+		"mqtt": ">=1.6.3"
+  	},
+	"author": "Leon Anavi <leon@anavi.org>",
+	"license": "GPL-3.0",
+	"bugs": {
+		"url": "https://github.com/RabbitPi/weather-station/issues"
+	},
+	"homepage": "https://github.com/RabbitPi/weather-station",
+	"preferGlobal": "true",
+	"bin": {
+		"rabbitpi-weather-station": "./weather-station.js"
+	}
+}
