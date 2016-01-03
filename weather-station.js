@@ -4,6 +4,12 @@ var nconf = require('nconf');
 var mqtt  = require('mqtt');
 var fs = require('fs');
 
+// Retrieve unique machine id
+// which later will be used in MQTT topics
+// Note that new lines should be stripped from the string
+var machineId = fs.readFileSync('/etc/machine-id', "utf8").replace(/\r?\n|\r/g, '');
+console.log('Machine ID: '+machineId);
+
 var configPath = '/etc/rabbitpi/weather-station.json'
 
 try {
@@ -32,6 +38,10 @@ var data = {
 		"humidity": 0
 }
 
+function machineTopic(topic) {
+	return machineId + '/' + topic;
+}
+
 function childProcessConfigurations(message) {
 	// Example configuration message:
 	// { "print": false }
@@ -48,11 +58,11 @@ function childProcessConfigurations(message) {
 }
 
 client.on('connect', function () {
-	client.subscribe('config');
+	client.subscribe(machineTopic('config'));
 });
 
 client.on('message', function (topic, message) {
-	if ('config' === topic) {
+	if (machineTopic('config') === topic) {
 		childProcessConfigurations(message);
 	}
 });
@@ -66,19 +76,19 @@ function readData(error, stdout, stderr) {
 	//check if weather data has changed
 	if (dataNew.temperature && data.temperature &&
 		(dataNew.temperature != data.temperature) ) {
-		client.publish('sensors/temperature',
+		client.publish(machineTopic('sensors/temperature'),
 			JSON.stringify({ temperature: dataNew.temperature }) );
 	}
 
 	if (dataNew.humidity && data.humidity &&
 		(dataNew.humidity != data.humidity) ) {
-		client.publish('sensors/humidity',
+		client.publish(machineTopic('sensors/humidity'),
 			JSON.stringify({ humidity: dataNew.humidity }) );
 	}
 
 	if (dataNew.pressure && data.pressure &&
 		(dataNew.pressure != data.pressure) ) {
-		client.publish('sensors/pressure',
+		client.publish(machineTopic('sensors/pressure'),
 			JSON.stringify({ pressure: dataNew.pressure }) );
 	}
 
