@@ -30,6 +30,8 @@ var python = "/usr/bin/python";
 var path = "/opt/rabbitpi/weather-station/";
 var cmdPrefix = python + " " + path;
 
+var intervalPrint = null;
+var printChild = null;
 var isPrintEnabled = nconf.get('display:print');
 
 var data = {
@@ -44,12 +46,23 @@ function machineTopic(topic) {
 
 function childProcessConfigurations(message) {
 	// Example configuration message:
-	// { "print": false }
+	// { "display": false }
 	try {
 		// Read configurations
 		var config = JSON.parse(message.toString());
 		// Update print settings
-		isPrintEnabled = (true == config.print);
+		if (true == config.display) {
+			// Make change if needed only
+			if (false === isPrintEnabled) {
+				isPrintEnabled = true;
+				printChild.kill();
+				startPrinting();
+			}
+		}
+		else {
+			isPrintEnabled = false;
+			clearInterval(intervalPrint);
+		}
 	}
 	catch(error) {
 		// Nothing to do, the configuration is wrong
@@ -107,20 +120,20 @@ function print() {
 	var text = "Temperature: " + data.temperature + "C ";
 	text += "Humidity: " + data.humidity + "% ";
 	text += "Pressure: " + data.pressure + "mb ";
-	var child = childProcess.spawn(python, [path+"print.py", "--text", text], {
+	printChild = childProcess.spawn(python, [path+"print.py", "--text", text], {
 		detached: true,
 		stdio: [ 'ignore', 'ignore', 'ignore' ]
 	});
-	child.unref();
+	printChild.unref();
+}
+
+function startPrinting() {
+	intervalPrint = setInterval(print(), 32000);
 }
 
 function start(error, stdout, stderr) {
 	if (readData(error, stdout, stderr)) {
-		print();
-
-		var intervalPrint = setInterval(function() {
-			print();
-		}, 32000);
+		startPrinting();
 	}
 }
 
