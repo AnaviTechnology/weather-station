@@ -128,7 +128,10 @@ function print() {
 }
 
 function startPrinting() {
-	intervalPrint = setInterval(print(), 32000);
+	print();
+	intervalPrint = setInterval(function() {
+		print();
+	}, 32000);
 }
 
 function start(error, stdout, stderr) {
